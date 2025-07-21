@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Places from './components/Places.jsx';
 import { AVAILABLE_PLACES } from './data.js';
@@ -7,57 +7,60 @@ import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
 
 function App() {
-  // Tạo ref để điều khiển modal xác nhận xóa
   const modal = useRef();
-  // Lưu id của địa điểm được chọn để xóa
   const selectedPlace = useRef();
-  // State lưu danh sách các địa điểm đã chọn
   const [pickedPlaces, setPickedPlaces] = useState([]);
 
-  // Khi người dùng bắt đầu thao tác xóa một địa điểm
+  // ✅ useEffect 1: Load dữ liệu từ localStorage khi app khởi động
+  useEffect(() => {
+    const storedIds = JSON.parse(localStorage.getItem('pickedPlaces')) || [];
+    const storedPlaces = storedIds
+      .map((id) => AVAILABLE_PLACES.find((place) => place.id === id))
+      .filter(Boolean); // Loại bỏ null nếu không tìm thấy
+    setPickedPlaces(storedPlaces);
+  }, []);
+
+  // ✅ useEffect 2: Lưu danh sách pickedPlaces vào localStorage mỗi khi thay đổi
+  useEffect(() => {
+    const ids = pickedPlaces.map((place) => place.id);
+    localStorage.setItem('pickedPlaces', JSON.stringify(ids));
+  }, [pickedPlaces]);
+
   function handleStartRemovePlace(id) {
-    modal.current.open(); // Mở modal xác nhận
-    selectedPlace.current = id; // Lưu id địa điểm cần xóa
+    modal.current.open();
+    selectedPlace.current = id;
   }
 
-  // Đóng modal khi người dùng hủy thao tác xóa
   function handleStopRemovePlace() {
     modal.current.close();
   }
 
-  // Thêm địa điểm vào danh sách đã chọn nếu chưa có
   function handleSelectPlace(id) {
     setPickedPlaces((prevPickedPlaces) => {
-      // Nếu địa điểm đã có trong danh sách thì không thêm nữa
       if (prevPickedPlaces.some((place) => place.id === id)) {
         return prevPickedPlaces;
       }
-      // Tìm địa điểm theo id trong danh sách có sẵn
       const place = AVAILABLE_PLACES.find((place) => place.id === id);
-      // Thêm vào đầu danh sách đã chọn
       return [place, ...prevPickedPlaces];
     });
   }
 
-  // Xóa địa điểm khỏi danh sách đã chọn
   function handleRemovePlace() {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
-    modal.current.close(); // Đóng modal sau khi xóa
+    modal.current.close();
   }
 
   return (
     <>
-      {/* Modal xác nhận xóa địa điểm */}
       <Modal ref={modal}>
         <DeleteConfirmation
-          onCancel={handleStopRemovePlace} // Hủy thao tác xóa
-          onConfirm={handleRemovePlace}   // Xác nhận xóa
+          onCancel={handleStopRemovePlace}
+          onConfirm={handleRemovePlace}
         />
       </Modal>
 
-      {/* Header giới thiệu ứng dụng */}
       <header>
         <img src={logoImg} alt="Stylized globe" />
         <h1>PlacePicker</h1>
@@ -67,18 +70,16 @@ function App() {
         </p>
       </header>
       <main>
-        {/* Danh sách các địa điểm đã chọn */}
         <Places
           title="I'd like to visit ..."
           fallbackText={'Select the places you would like to visit below.'}
           places={pickedPlaces}
-          onSelectPlace={handleStartRemovePlace} // Nhấn vào để xóa
+          onSelectPlace={handleStartRemovePlace}
         />
-        {/* Danh sách các địa điểm có sẵn để chọn */}
         <Places
           title="Available Places"
           places={AVAILABLE_PLACES}
-          onSelectPlace={handleSelectPlace} // Nhấn vào để thêm
+          onSelectPlace={handleSelectPlace}
         />
       </main>
     </>
