@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-
 import Places from './components/Places.jsx';
 import { AVAILABLE_PLACES } from './data.js';
 import Modal from './components/Modal.jsx';
@@ -7,32 +6,32 @@ import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
 
 function App() {
-  const modal = useRef();
   const selectedPlace = useRef();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [pickedPlaces, setPickedPlaces] = useState([]);
 
-  // ✅ useEffect 1: Load dữ liệu từ localStorage khi app khởi động
+  // Load dữ liệu từ localStorage khi app khởi động
   useEffect(() => {
     const storedIds = JSON.parse(localStorage.getItem('pickedPlaces')) || [];
     const storedPlaces = storedIds
       .map((id) => AVAILABLE_PLACES.find((place) => place.id === id))
-      .filter(Boolean); // Loại bỏ null nếu không tìm thấy
+      .filter(Boolean);
     setPickedPlaces(storedPlaces);
   }, []);
 
-  // ✅ useEffect 2: Lưu danh sách pickedPlaces vào localStorage mỗi khi thay đổi
+  // Lưu danh sách pickedPlaces vào localStorage mỗi khi thay đổi
   useEffect(() => {
     const ids = pickedPlaces.map((place) => place.id);
     localStorage.setItem('pickedPlaces', JSON.stringify(ids));
   }, [pickedPlaces]);
 
   function handleStartRemovePlace(id) {
-    modal.current.open();
+    setIsModalOpen(true);
     selectedPlace.current = id;
   }
 
   function handleStopRemovePlace() {
-    modal.current.close();
+    setIsModalOpen(false);
   }
 
   function handleSelectPlace(id) {
@@ -49,7 +48,7 @@ function App() {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
-    modal.current.close();
+    setIsModalOpen(false);
   }
 
   function handleClearPickedPlaces() {
@@ -58,7 +57,7 @@ function App() {
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal isOpen={isModalOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
           onConfirm={handleRemovePlace}
@@ -73,25 +72,24 @@ function App() {
           you have visited.
         </p>
         {pickedPlaces.length > 0 && (
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={handleClearPickedPlaces}
-          className="
-            px-4 py-2
-            bg-blue-500 hover:bg-blue-600
-            text-white font-medium
-            rounded-lg
-            shadow-md hover:shadow-lg
-            transition
-            duration-200
-            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75
-          "
-        >
-      Clear All
-    </button>
-  </div>
-)}
-
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handleClearPickedPlaces}
+              className="
+                px-4 py-2
+                bg-blue-500 hover:bg-blue-600
+                text-white font-medium
+                rounded-lg
+                shadow-md hover:shadow-lg
+                transition
+                duration-200
+                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75
+              "
+            >
+              Clear All
+            </button>
+          </div>
+        )}
       </header>
       <main>
         <Places
