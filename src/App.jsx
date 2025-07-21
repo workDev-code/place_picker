@@ -52,6 +52,10 @@ function App() {
     modal.current.close();
   }
 
+  function handleClearPickedPlaces() {
+    setPickedPlaces([]);
+  }
+
   return (
     <>
       <Modal ref={modal}>
@@ -68,6 +72,26 @@ function App() {
           Create your personal collection of places you would like to visit or
           you have visited.
         </p>
+        {pickedPlaces.length > 0 && (
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={handleClearPickedPlaces}
+          className="
+            px-4 py-2
+            bg-blue-500 hover:bg-blue-600
+            text-white font-medium
+            rounded-lg
+            shadow-md hover:shadow-lg
+            transition
+            duration-200
+            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75
+          "
+        >
+      Clear All
+    </button>
+  </div>
+)}
+
       </header>
       <main>
         <Places
