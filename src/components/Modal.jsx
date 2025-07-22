@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-function Modal({ children, isOpen, onClose }) {
+function Modal({ children, isOpen}) {
   const dialog = useRef();
 
+ // Nhưng bổ sung thêm effect để tự động mở/đóng khi prop isOpen thay đổi
   useEffect(() => {
+    if (!dialog.current) return;
     if (isOpen) {
       dialog.current.showModal();
     } else {

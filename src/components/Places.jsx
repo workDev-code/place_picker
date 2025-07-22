@@ -14,7 +14,7 @@ export default function Places({ title, places, fallbackText, onSelectPlace }) {
               {/* Nút hiển thị thông tin địa điểm, khi nhấn gọi hàm onSelectPlace với id */}
               <button onClick={() => onSelectPlace(place.id)}>
                 <img src={place.image.src} alt={place.image.alt} />
-                <h3>{place.title}</h3>
+               <h3 className="text-lg font-semibold text-gray-800 mt-2">{place.title}</h3>
               </button>
             </li>
           ))}
