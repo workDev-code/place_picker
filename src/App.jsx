@@ -4,38 +4,13 @@ import { AVAILABLE_PLACES } from './data.js';
 import Modal from './components/Modal.jsx';
 import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
-import {sortPlacesByDistance} from './loc.js'
+import { usePickedPlaces } from './hooks/usePickedPlaces.js';
+
 
 function App() {
   const selectedPlace = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [pickedPlaces, setPickedPlaces] = useState([]);
-
-  // Load dữ liệu từ localStorage khi app khởi động
-  useEffect(() => {
-    const storedIds = JSON.parse(localStorage.getItem('pickedPlaces')) || [];
-    const storedPlaces = storedIds
-      .map((id) => AVAILABLE_PLACES.find((place) => place.id === id))
-      .filter(Boolean);
-    setPickedPlaces(storedPlaces);
-
-    navigator.geolocation.getCurrentPosition((position) => {
-      console.log('Current position:', position);
-      const sortedPlaces = sortPlacesByDistance(
-        AVAILABLE_PLACES,
-        position.coords.latitude,
-        position.coords.longitude
-      );
-    }, (error) => {
-      console.error('Error getting current position:', error);
-    });
-  }, []);
-
-  // Lưu danh sách pickedPlaces vào localStorage mỗi khi thay đổi
-  useEffect(() => {
-    const ids = pickedPlaces.map((place) => place.id);
-    localStorage.setItem('pickedPlaces', JSON.stringify(ids));
-  }, [pickedPlaces]);
+  const { pickedPlaces, setPickedPlaces, userLocation } = usePickedPlaces(); // ✅ dùng custom hook
 
   function handleStartRemovePlace(id) {
     setIsModalOpen(true);
