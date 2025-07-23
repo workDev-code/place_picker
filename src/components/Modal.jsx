@@ -6,7 +6,9 @@ function Modal({ children, isOpen}) {
 
  // Nhưng bổ sung thêm effect để tự động mở/đóng khi prop isOpen thay đổi
   useEffect(() => {
+    
     if (!dialog.current) return;
+
     if (isOpen) {
       dialog.current.showModal();
     } else {
@@ -16,7 +18,7 @@ function Modal({ children, isOpen}) {
 
   return createPortal(
     <dialog className="modal" ref={dialog}>
-      {children}
+      {isOpen && children}
     </dialog>,
     document.getElementById('modal')
   );

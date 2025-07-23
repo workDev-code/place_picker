@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Places from './components/Places.jsx';
 import { AVAILABLE_PLACES } from './data.js';
 import Modal from './components/Modal.jsx';
@@ -31,12 +31,13 @@ function App() {
     });
   }
 
-  function handleRemovePlace() {
+  // ✅ callback không đổi reference
+  const handleRemovePlace = useCallback(() => {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
     setIsModalOpen(false);
-  }
+  }, []);
 
   function handleClearPickedPlaces() {
     setPickedPlaces([]);
@@ -44,11 +45,14 @@ function App() {
 
   return (
     <>
-      <Modal isOpen={isModalOpen} onClose={handleStopRemovePlace}>
-        <DeleteConfirmation
+      <Modal isOpen={isModalOpen}>
+      {
+         <DeleteConfirmation
+          key={Date.now}
           onCancel={handleStopRemovePlace}
           onConfirm={handleRemovePlace}
         />
+      }
       </Modal>
 
       <header>

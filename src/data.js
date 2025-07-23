@@ -199,3 +199,5 @@ export const AVAILABLE_PLACES = [
     lon: -58.38,
   },
 ];
+
+export const TIMER = 3000;
